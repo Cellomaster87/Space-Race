@@ -101,24 +101,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if children.contains(player) {
-            let explosion = SKEmitterNode(fileNamed: "explosion")!
-            explosion.position = player.position
-            addChild(explosion)
-            
-            player.removeFromParent()
-            isGameOver = true
+            stopTheGame()
         } else {
             return
         }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        let explosion = SKEmitterNode(fileNamed: "explosion")!
-        explosion.position = player.position
-        addChild(explosion)
-        
-        player.removeFromParent()
-        isGameOver = true
+        stopTheGame()
     }
     
     // MARK: - Helper methods
@@ -136,5 +126,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite.physicsBody?.angularVelocity = 5 // give a constant spin
         sprite.physicsBody?.linearDamping = 0 // how fast it slows in time (never)
         sprite.physicsBody?.angularDamping = 0 // how fast it slows its spinning (never)
+    }
+    
+    func stopTheGame() {
+        let explosion = SKEmitterNode(fileNamed: "explosion")!
+        explosion.position = player.position
+        addChild(explosion)
+        
+        player.removeFromParent()
+        isGameOver = true
+        gameTimer?.invalidate()
     }
 }
