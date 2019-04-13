@@ -24,6 +24,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    var timeInterval = 0.0 {
+        didSet {
+            print("Time Interval: \(timeInterval)")
+        }
+    }
+    
+    var numberOfEnemies = 0 {
+        didSet {
+            print("Number of Enemies: \(numberOfEnemies)")
+            if numberOfEnemies.isMultiple(of: 20) {
+                timeInterval -= 0.1
+                gameTimer?.invalidate()
+                gameTimer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
+            }
+        }
+    }
+    
     // MARK: - Movement management
     override func didMove(to view: SKView) {
         backgroundColor = .black
@@ -51,8 +68,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self // tell us when contacts happen!
         
         // Create enemies
-        gameTimer = Timer.scheduledTimer(timeInterval: 0.35, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
-        
+        timeInterval = 1.0 // trigger the console
+        gameTimer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
     }
     
     // MARK: - SpriteKit delegate methods
@@ -111,6 +128,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let sprite = SKSpriteNode(imageNamed: enemy)
         sprite.position = CGPoint(x: 1200, y: Int.random(in: 50...736))
         addChild(sprite)
+        numberOfEnemies += 1
         
         sprite.physicsBody = SKPhysicsBody(texture: sprite.texture!, size: sprite.size)
         sprite.physicsBody?.categoryBitMask = 1
